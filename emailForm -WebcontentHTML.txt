@@ -1,0 +1,71 @@
+<style type="text/css">.mail-container{
+margin-left:10px;
+}
+#successMessage{
+color:green;
+}
+#errorMessage{
+color:red;
+}
+</style>
+<div class="mail-container">
+<div id="successMessage">&nbsp;</div>
+
+<div id="errorMessage">&nbsp;</div>
+
+<form action="#" enctype="text/plain" method="post">Receiver Name:<br />
+<input id="receiverName" name="receiverName" type="text" value="" /><br />
+Receiver Email:<br />
+<input id="receiverEmail" name="receiverEmail" type="text" value="" /><br />
+Sender Name:<br />
+<input id="senderName" name="senderName" type="text" value="" /><br />
+Sendw Email:<br />
+<input id="senderMail" name="senderMail" type="text" value="" /><br />
+Subject<br />
+<input id="mailSubject" name="mailSubject" type="text" value="" /><br />
+Mail Body<br />
+<textarea cols="50" id="mailBody" name="mailBody" rows="4"></textarea><br />
+<br />
+<input id="mailSend" type="button" value="mailSend" /> <input type="reset" value="Reset" />&nbsp;</form>
+</div>
+<script>
+YUI().use('aui-base','aui-io-request', function(A){
+	A.one("#mailSend").on('click',function(){
+		A.one("#errorMessage").set("innerHTML","");
+		A.one("#successMessage").set("innerHTML","");
+		var receiverName=A.one("#receiverName").get("value");
+		var receiverEmail=A.one("#receiverEmail").get("value");
+		var senderName=A.one("#senderName").get("value");
+		var senderMail=A.one("#senderMail").get("value");
+		var mailSubject=A.one("#mailSubject").get("value");
+		var mailBody=A.one("#mailBody").get("value");
+		//alert("This click Event from AUI");
+		//aui ajax call to get updated content
+		 A.io.request('http://localhost:8080/?p_p_id=AjaxMailSender_WAR_AjaxMailSenderportlet&p_p_lifecycle=2',{
+			                        dataType: 'json',
+			                        method: 'GET',
+			                        data: {
+									receiverName:receiverName,
+									receiverEmail:receiverEmail,
+									senderName:senderName,
+									senderMail:senderMail,
+									mailSubject:mailSubject,
+									mailBody:mailBody
+									},
+			                        on: {
+			                                    success: function() {
+			                                    // response data will be received here
+			                                    	var data = this.get('responseData');
+													if(data.errorMessage){
+													A.one("#errorMessage").set("innerHTML",data.errorMessage);
+													}
+													if(data.successMessage){
+													A.one("#successMessage").set("innerHTML",data.successMessage);
+													}
+													//console.log(data.successMessage,"data");
+			                                    }
+			                        }
+			            });
+		});
+	});
+</script>
